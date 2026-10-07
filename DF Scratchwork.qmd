@@ -13,5 +13,5 @@ pima_hmda <- read.csv("/home/admin/Desktop/pima.csv") #Import and assign populat
 ```
 
 ```{r}
-summary(pima_hmda$interest_rate) # verify interest_rate has enough data
+summary(pima_hmda)
 ```
