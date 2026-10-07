@@ -1,0 +1,13 @@
+---
+title: "Simple Linear Regression"
+Author: "Dominick Ferreira"
+format: html
+---
+
+```{r}
+source("R/data_cleaned.R")
+
+slr_model <- lm(interest_rate ~ income, pima_hmda_clean)
+
+summary(slr_model)
+```
