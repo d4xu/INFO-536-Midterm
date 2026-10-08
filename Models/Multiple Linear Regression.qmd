@@ -5,19 +5,20 @@ format: html
 ---
 
 ```{r}
-project_root <- "R/data_cleaned.R"
+source("R/data_cleaned.R")
 
-old_wd <- getwd()
-setwd(project_root)
-tryCatch(
-  source("R/data_cleaned.R"),
-  finally = setwd(old_wd)
-)
+library(car)
+
+head(pima_hmda_clean)
 
 mlr_model <- lm(
-  interest_rate ~ applicant_age + income + loan_amount + property_value,
+  interest_rate ~ loan_term + income + loan_amount + property_value,
   data = pima_hmda_clean
 )
 
 summary(mlr_model)
+
+vif_values <- vif(mlr_model)
+print(vif_values)
+
 ```
