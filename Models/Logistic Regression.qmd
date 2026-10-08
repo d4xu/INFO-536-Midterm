@@ -1,0 +1,47 @@
+---
+title: "Logistic_Reg"
+author: "Aarush Narang"
+format: html
+editor: visual
+---
+
+Logistic Regression: Mortgage Denial
+Pima County HMDA 2025
+
+Analytical Sample
+
+For the logistic regression, we restrict the sample to applications that were either originated or denied. Originated applications are coded as 0 (not denied), while denied applications are coded as 1. Other outcomes (approved but not accepted, withdrawn, incomplete, purchased, and other application outcomes) are excluded because they do not represent a directly comparable approval-versus-denial decision.
+
+Keeping only originated and denied applications i.e. action_taken values: 
+1 = originated and 3 = denied
+
+pima_hmda_clean keeps only rows that have an interest rate, and denied applicants never get one, so all denials (action_taken == 3) are deleted during cleaning. A logistic regression on denial needs both outcomes (denied = 1, approved = 0).
+
+```{r}
+library(tidyverse)
+
+pima_logistic <- read.csv("Data/pima.csv") %>%
+  select(action_taken, income, loan_amount, property_value) %>%
+  mutate(property_value = as.numeric(na_if(property_value, "Exempt"))) %>%
+  filter(
+    action_taken %in% c(1, 3),   # 1 = originated, 3 = denied
+    !is.na(income),
+    !is.na(loan_amount),
+    !is.na(property_value)
+  ) %>%
+  mutate(denial = ifelse(action_taken == 3, 1, 0))
+
+table(pima_logistic$denial)
+
+logistic_model <- glm(
+  denial ~ income + loan_amount + property_value,
+  data = pima_logistic,
+  family = binomial
+)
+
+summary(logistic_model)
+
+
+```
+
+
