@@ -24,7 +24,7 @@ pima_logistic <- read.csv("Data/pima.csv") %>%
   select(action_taken, income, loan_amount, property_value) %>%
   mutate(property_value = as.numeric(na_if(property_value, "Exempt"))) %>%
   filter(
-    action_taken %in% c(1, 3),   # 1 = originated, 3 = denied
+    action_taken %in% c(1, 3),   # 1 = originated applications, 3 = denied applications
     !is.na(income),
     !is.na(loan_amount),
     !is.na(property_value)
