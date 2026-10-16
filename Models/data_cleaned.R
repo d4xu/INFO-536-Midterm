@@ -1,7 +1,9 @@
 # install.packages(tidyverse)
 library(tidyverse) #Import Tidyverse
+library(ggplot2) # Import GGPlot
 
-pima_hmda <- read.csv("Data/pima.csv") #Import and assign population data.
+
+pima_hmda <- read.csv("../Data/pima.csv") #Import and assign population data.
 pima_hmda_clean <- pima_hmda %>%
   select(
     interest_rate,
@@ -29,4 +31,20 @@ pima_hmda_clean <- pima_hmda %>%
     !is.na(applicant_age)
   )
 
+pima_logistic <- pima_hmda %>%
+  select(
+    action_taken, 
+    income, 
+    loan_amount, 
+    property_value) %>%
+  mutate(
+    property_value = as.numeric(na_if(property_value, "Exempt"))
+  ) %>%
+  filter(
+    action_taken %in% c(1, 3),   # 1 = originated applications, 3 = denied applications
+    !is.na(income),
+    !is.na(loan_amount),
+    !is.na(property_value)
+  ) %>%
+  mutate(denial = ifelse(action_taken == 3, 1, 0))
 
