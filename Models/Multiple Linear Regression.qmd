@@ -5,9 +5,8 @@ format: html
 ---
 
 ```{r}
-source("R/data_cleaned.R")
+source("data_cleaned.R")
 
-library(car)
 
 head(pima_hmda_clean)
 
@@ -20,5 +19,4 @@ summary(mlr_model)
 
 vif_values <- vif(mlr_model)
 print(vif_values)
-
 ```

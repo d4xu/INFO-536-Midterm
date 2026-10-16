@@ -1,6 +1,8 @@
 # install.packages(tidyverse)
 library(tidyverse) #Import Tidyverse
 library(ggplot2) # Import GGPlot
+library(car) # import Car
+
 
 
 pima_hmda <- read.csv("../Data/pima.csv") #Import and assign population data.
