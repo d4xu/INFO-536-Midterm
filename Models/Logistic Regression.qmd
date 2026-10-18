@@ -30,16 +30,29 @@ test_data  <- pima_logistic[-train_index, ]
 
 logistic_model <- glm(
   denial ~ income + loan_amount + property_value,
-  data = pima_logistic,
+  data = train_data,
   family = binomial
 )
 
 summary(logistic_model)
 
-B_0 <- -0.615      # intercept
+# Multicollinearity check
+vif(logistic_model)
+
+B_0 <- -0.593      # intercept
 B_1 <- 9.19e-06    # income (per $1,000)
 B_2 <- -3.72e-06   # loan_amount (per $1)
 B_3 <- -2.09e-09   # property_value (per $1)
+
+# Predicted probabilities on the test set
+test_data$predicted_prob <- predict(logistic_model, newdata = test_data, type = "response")
+
+# 0.5 threshold: at or above 0.5 is predicted as denied (1)
+test_data$predicted_class <- ifelse(test_data$predicted_prob >= 0.5, 1, 0)
+
+# Confusion matrix and test accuracy
+table(Predicted = test_data$predicted_class, Actual = test_data$denial)
+mean(test_data$predicted_class == test_data$denial)
 
 
 #Illustratively picked values
@@ -61,5 +74,22 @@ probability_B <- exp(log_odds_B) / (1 + exp(log_odds_B))
 
 probability_A / probability_B      #Applicant A's chance of denial is 1.8 times than B's
 
+pred_data <- data.frame(loan_amount = seq(50000, 1000000, by = 25000))
+pred_data <- pred_data %>%
+  mutate(
+    log_odds    = B_0 + B_1*100 + B_2*loan_amount + B_3*350000,
+    probability = exp(log_odds) / (1 + exp(log_odds))
+  )
+
+ggplot(pred_data, aes(x = loan_amount, y = probability)) +
+  geom_line(linewidth = 1.4, color = "steelblue") +
+  geom_point(data = data.frame(loan_amount = c(150000, 350000),
+                               probability = c(probability_A, probability_B)),
+             size = 3, color = "darkred") +
+  theme_minimal(base_size = 14) +
+  labs(title = "Predicted Probability of Denial by Loan Amount",
+       subtitle = "Holding income = $100,000 and property value = $350,000",
+       x = "Loan Amount ($)", y = "Predicted Probability of Denial") +
+  ylim(0, 1)
 
 ```
