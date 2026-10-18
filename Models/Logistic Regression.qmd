@@ -18,8 +18,15 @@ pima_hmda_clean keeps only rows that have an interest rate, and denied applicant
 ```{r}
 source("data_cleaned.R")
 
-
 table(pima_logistic$denial)
+
+num_samples <- nrow(pima_logistic)
+
+# 70-30 split
+set.seed(42)
+train_index <- as.numeric(sample(rownames(pima_logistic), 0.7 * num_samples))
+train_data <- pima_logistic[train_index, ]
+test_data  <- pima_logistic[-train_index, ]
 
 logistic_model <- glm(
   denial ~ income + loan_amount + property_value,
@@ -28,6 +35,31 @@ logistic_model <- glm(
 )
 
 summary(logistic_model)
+
+B_0 <- -0.615      # intercept
+B_1 <- 9.19e-06    # income (per $1,000)
+B_2 <- -3.72e-06   # loan_amount (per $1)
+B_3 <- -2.09e-09   # property_value (per $1)
+
+
+#Illustratively picked values
+
+income <- 100               # which is basically $100,000
+property_value <- 350000
+
+# Applicant A: loan amount $150,000
+loan_amount <- 150000
+log_odds_A = B_0 + B_1*income + B_2*loan_amount + B_3*property_value
+odds_A = exp(log_odds_A)                       #(p/1-p)
+probability_A <- exp(log_odds_A) / (1 + exp(log_odds_A))
+
+# Applicant B: same income and property value, loan amount $350,000
+loan_amount <- 350000
+log_odds_B = B_0 + B_1*income + B_2*loan_amount + B_3*property_value
+odds_B = exp(log_odds_B)
+probability_B <- exp(log_odds_B) / (1 + exp(log_odds_B))
+
+probability_A / probability_B      #Applicant A's chance of denial is 1.8 times than B's
 
 
 ```
