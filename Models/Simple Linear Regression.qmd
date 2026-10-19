@@ -6,7 +6,17 @@ format: html
 
 ```{r}
 source("data_cleaned.R")
+
 slr_model <- lm(interest_rate ~ income, pima_hmda_clean)
 
 summary(slr_model)
+
+ggplot(pima_hmda_clean, aes(x = income, y = interest_rate)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE)+
+  labs(
+    x="Applicant Income in thousands, USD",
+    y="Interest rate (%)"
+    )
+
 ```
